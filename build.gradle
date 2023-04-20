@@ -1,0 +1,43 @@
+plugins {
+    id 'java-gradle-plugin'
+    id 'maven-publish'
+}
+
+group 'com.example'
+version '1.0.0'
+
+repositories {
+    mavenCentral()
+    maven { url 'https://repo.gradle.org/gradle/libs-releases' }
+}
+
+dependencies {
+    testImplementation 'junit:junit:4.13.2'
+    runtimeOnly 'org.gradle:gradle-tooling-api:7.4.2'
+}
+
+gradlePlugin {
+    plugins {
+        createFilesPlugin {
+            id = 'com.example.create-files-plugin'
+            implementationClass = 'com.example.YourGradlePlugin'
+        }
+    }
+}
+
+publishing {
+    repositories {
+        maven {
+            url = uri('https://maven.pkg.github.com/Bemuh/karateGradled')
+            credentials {
+                username = project.findProperty('gpr.user') ?: System.getenv('GITHUB_USERNAME')
+                password = project.findProperty('gpr.key') ?: System.getenv('GITHUB_TOKEN')
+            }
+        }
+    }
+    publications {
+        createFilesPlugin(MavenPublication) {
+            from components.java
+        }
+    }
+}
